@@ -4,15 +4,54 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    public GameObject[] floorTiles, outerWallTiles; //Losetas
+    public GameObject[] floorTiles, outerWallTiles, wallTiles, foodTles , enemyTiles; //Losetas
+    public GameObject exit;
 
+    List<Vector2> gridPositions = new List<Vector2>();
     Transform boardHolder;
     int columns = 8;
     int rows = 8;
 
-    public void SetupScene()
+    void InitializeList()
+    {
+        gridPositions.Clear();
+
+        for (int x = 1; x < columns - 1; x++)
+        {
+            for (int y = 1; y < rows - 1; y++)
+                gridPositions.Add(new Vector2(x, y));
+        }
+    }
+
+    Vector2 RandomPosition()
+    {
+        int randomIndex = Random.Range(0, gridPositions.Count);
+        Vector2 randomPosition = gridPositions[randomIndex];
+        gridPositions.RemoveAt(randomIndex);
+        return randomPosition;
+    }
+
+    void LayouObjectAtRandom(GameObject[] tileArray, int min, int max)
+    {
+        int objectCount = Random.Range(min, max + 1);
+
+        for (int i = 0; i < objectCount; i++)
+        {
+            Vector2 randomPosition = RandomPosition();
+            GameObject titleChoice = GetRandomInArray(tileArray);
+            Instantiate(titleChoice, randomPosition, Quaternion.identity);
+        }
+    }
+
+    public void SetupScene(int level)
     {
         BoardSetup();
+        InitializeList();
+        LayouObjectAtRandom(wallTiles, 5, 9);
+        LayouObjectAtRandom(foodTles, 1, 5);
+        int enemyCount = (int)Mathf.Log(level, 2);
+        LayouObjectAtRandom(enemyTiles, enemyCount, enemyCount);
+        Instantiate(exit, new Vector2(columns - 1, rows - 1), Quaternion.identity);
     }
 
     void BoardSetup()

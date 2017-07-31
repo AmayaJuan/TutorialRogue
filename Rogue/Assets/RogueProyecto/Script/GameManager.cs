@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
     public BoardManager boardScript;
 
     void Awake()
     {
+        if (GameManager.instance == null)
+            GameManager.instance = this;
+        else if (GameManager.instance != this)
+            Destroy(gameObject);
+
+        DontDestroyOnLoad(gameObject);
         boardScript = GetComponent<BoardManager>();
     }
 
@@ -18,7 +25,7 @@ public class GameManager : MonoBehaviour
 	
     void InitGame()
     {
-        boardScript.SetupScene();
+        boardScript.SetupScene(3);
     }
 	
 	void Update ()
