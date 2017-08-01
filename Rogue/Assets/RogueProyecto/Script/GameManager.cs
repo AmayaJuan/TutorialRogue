@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
             GameManager.instance = this;
         else if (GameManager.instance != this)
             Destroy(gameObject);
-
         DontDestroyOnLoad(gameObject);
         boardScript = GetComponent<BoardMananager>();
     }
