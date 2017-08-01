@@ -21,8 +21,6 @@ public class Wall : MonoBehaviour
         hp -= loss;
 
         if (hp <= 0)
-        {
             gameObject.SetActive(false);
-        }
     }
 }

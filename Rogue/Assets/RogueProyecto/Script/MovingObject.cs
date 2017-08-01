@@ -11,14 +11,13 @@ public abstract class MovingObject : MonoBehaviour
     BoxCollider2D boxCollider;
     Rigidbody2D rb;
 
-    void Awake()
+    protected virtual void Awake()
     {
         boxCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
-
     }
 
-    void Start ()
+    protected virtual void Start ()
     {
         movementSpeed = 1f / moveTime;
 	}
@@ -58,7 +57,8 @@ public abstract class MovingObject : MonoBehaviour
     {
         RaycastHit2D hit;
         bool canMove = Move(xDir, yDir, out hit);
-        if (canMove) return;
+        if (canMove)
+            return;
 
         OnCantMove(hit.transform.gameObject);
     }
