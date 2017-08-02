@@ -1,17 +1,24 @@
-﻿ using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     [HideInInspector]public bool playersTurn = true;
+    public bool doingSetup;
     public BoardMananager boardScript;
     public int playerFoodPoints = 100;
     public float turnDelay = .1f;
+    public float levelStartDelay = 2f;
 
+    private GameObject levelImage;
+    private Text levelText;
     private bool enemiesMoving;
     private List<Enemy> enemies = new List<Enemy>();
+    private int level = 0;
 
     void Awake()
     {
@@ -23,20 +30,28 @@ public class GameManager : MonoBehaviour
         boardScript = GetComponent<BoardMananager>();
     }
 
-    void Start ()
-    {
-        InitGame();
-    }
-
     void InitGame()
     {
+        doingSetup = true;
+        levelImage = GameObject.Find("LevelImage");
+        levelText = GameObject.Find("LevelText").GetComponent<Text>();
+        levelText.text = "Day " + level;
+        levelImage.SetActive(true);
         enemies.Clear();
-        boardScript.SetupScene(3);
+        boardScript.SetupScene(level);
+        Invoke("HideLevelImage", levelStartDelay);
+    }
 
+    void HideLevelImage()
+    {
+        levelImage.SetActive(false);
+        doingSetup = false;
     }
 
     public void GameOver()
     {
+        levelText.text = "After" + level + " days, yoou starved.";
+        levelImage.SetActive(true);
         enabled = false;
     }
 
@@ -57,7 +72,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (playersTurn || enemiesMoving)
+        if (playersTurn || enemiesMoving || doingSetup)
             return;
         StartCoroutine(MoveEnemies());
     }
@@ -65,5 +80,21 @@ public class GameManager : MonoBehaviour
     public void AddEnemyToList(Enemy enemy)
     {
         enemies.Add(enemy);
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    {
+        level++;
+        InitGame();
     }
 }
