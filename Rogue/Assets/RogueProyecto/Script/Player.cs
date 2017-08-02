@@ -15,7 +15,7 @@ public class Player : MovingObject
     public float restartLevelDelay = 1f;
 
     private int food;
-    private Vector2 touchOrigin = -Vector2.one;
+    [HideInInspector]public Vector2 touchOrigin = -Vector2.one;
     Animator animator;
 
     protected override void Awake()
