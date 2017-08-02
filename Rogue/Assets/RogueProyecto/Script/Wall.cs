@@ -2,10 +2,11 @@
 
 public class Wall : MonoBehaviour
 {
+    public AudioClip chopSound1, chopSound2;
     public Sprite dmgSprite;
     public int hp = 4;
 
-    private SpriteRenderer spriteRenderer;
+    SpriteRenderer spriteRenderer;
 
     void Awake()
     {
@@ -14,6 +15,7 @@ public class Wall : MonoBehaviour
 
     public void DamageWall(int loss)
     {
+        SoundManager.instance.RandomizeSfx(chopSound1, chopSound2);
         spriteRenderer.sprite = dmgSprite;
         hp -= loss;
         if (hp <= 0)

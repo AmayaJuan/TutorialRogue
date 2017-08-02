@@ -51,12 +51,12 @@ public abstract class MovingObject : MonoBehaviour
 
     protected abstract void OnCantMove(GameObject go);
 
-    protected virtual void AttemptMove(int xDir, int yDir)
+    protected virtual bool AttemptMove(int xDir, int yDir)
     {
         RaycastHit2D hit;
         bool canMove = Move(xDir, yDir, out hit);
-        if (canMove)
-            return;
-        OnCantMove(hit.transform.gameObject);
+        if (!canMove)
+            OnCantMove(hit.transform.gameObject);
+        return canMove;
     }
 }
