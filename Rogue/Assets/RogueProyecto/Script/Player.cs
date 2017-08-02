@@ -15,7 +15,8 @@ public class Player : MovingObject
     public float restartLevelDelay = 1f;
 
     private int food;
-    private Animator animator;
+    private Vector2 touchOrigin = -Vector2.one;
+    Animator animator;
 
     protected override void Awake()
     {
@@ -62,12 +63,31 @@ public class Player : MovingObject
         if (!GameManager.instance.playersTurn || GameManager.instance.doingSetup)
             return;
 
-        int horizontal;
-        int vertical;
+        int horizontal = 0;
+        int vertical = 0;
+#if UNITY_STANDALINE || UNITY_WEBPLAYER || UNITY_EDITOR
         horizontal = (int)Input.GetAxisRaw("Horizontal");
         vertical = (int)Input.GetAxisRaw("Vertical");
         if (horizontal != 0)
             vertical = 0;
+#else
+        if (Input.touchCount > 0)
+        {
+            Touch myTouch = Input.touches[0];
+            if (myTouch.phase == TouchPhase.Began)
+                touchOrigin = myTouch.position;
+            else if (myTouch.phase == TouchPhase.Ended && touchOrigin != -Vector2.one)
+            {
+                Vector2 touchEnd = myTouch.position;
+                float x = touchEnd.x - touchOrigin.x;
+                float y = touchEnd.y - touchOrigin.y;
+                if (Mathf.Abs(x) > Mathf.Abs(y))
+                    horizontal = x > 0 ? 1 : -1;
+                else
+                    vertical = y > 0 ? 1 : -1;
+            }
+        }
+#endif
         if (horizontal != 0 || vertical != 0)
             AttemptMove(horizontal, vertical);
     }
